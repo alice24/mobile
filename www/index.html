@@ -1,0 +1,66 @@
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>ZIM Template</title>
+
+<!-- for CreateJS and ZIMjs http://zimjs.com - free to modify - Dan Zen 2015 -->
+<!-- see http://zimjs.com/templates for more templates and meta tags -->
+
+<script type="text/javascript" src="cordova.js"></script>
+
+<script>var zon = true; // true for comments from zim code</script>
+<script src="js/zim_2.4.js"></script><!-- add _doc to see code -->
+<script src="js/createjs-2015.05.21.min.js"></script>
+<!-- or can go to zimjs.com and createjs.com for individual modules -->
+
+<style>
+	body {margin:0px; padding:0px; background-color:#000;}
+	#myCanvas {position:absolute; background-color:#CCBBCC;}
+</style>
+
+<script>
+
+// SCALING OPTIONS
+// "none"		sets canvas and stage to dimensions and does not scale if window changes
+// "fit"		sets canvas and stage to dimensions and scales to fit inside window size
+// "outside"	sets canvas and stage to dimensions and scales to fit outside window size
+// "full"		sets canvas and stage to window size (canvas is actually set to screen size)
+
+var scaling = "fit"; // fit scales to fit the browser window while keeping the aspect ratio
+var width = 960;
+var height = 640;
+var frame = new zim.Frame(scaling, width, height);
+frame.on("ready", function() {
+	zog("ready from ZIM Frame");
+
+	var stage = frame.stage;
+	var stageW = frame.width;
+	var stageH = frame.height;
+
+	var c = new zim.Circle(100, "powderblue");
+	stage.addChild(c);
+	zim.centerReg(c,stage);
+
+	c.on("mousedown", function(){
+		zim.animate({
+			target:c,
+			obj:{scale:1.5},
+			time:1500,
+			ease: "elasticOut",
+			props:{rewind:true}
+		});
+	});
+	zim.drag(c);
+
+	stage.update();
+
+}); // end of ready
+</script>
+</head>
+
+<body>
+<!-- canvas with id="myCanvas" is made by zim Frame -->
+</body>
+</html>
