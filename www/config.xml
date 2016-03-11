@@ -6,10 +6,10 @@
         id        = "com.sheridan.imm.collective"
         version   = "1.0.0">
 
-    <name>Mobile Basic</name>
+    <name>My First App</name>
 
     <description>
-        Hello World sample application that responds to the deviceready event.
+        It is a circle that gets bigger.
     </description>
 
     <author href="http://axzhang.com" email="ax.zhang@hotmail.com">
@@ -157,7 +157,7 @@
 
   	<platform name="winphone">
   		<splash src="splash/portrait/winphone/SplashScreenImage.jpg" width="480" height="800" />
-      </platform>	
+      </platform>
 
   <!--
     <icon src="res/icon/android/icon-36-ldpi.png"   gap:platform="android"    gap:qualifier="ldpi" />
