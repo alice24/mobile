@@ -88,10 +88,15 @@
 			});
 
 			//ADD THE BORDERS TO THE FRAME!
-			var bt = new createjs.Bitmap(preloadImg.getResult("bt"));
-			var bb = new createjs.Bitmap(preloadImg.getResult("bb"));
-			var bl = new createjs.Bitmap(preloadImg.getResult("bl"));
-			var br = new createjs.Bitmap(preloadImg.getResult("br"));
+			// var bt = new createjs.Bitmap(preloadImg.getResult("bt"));
+			// var bb = new createjs.Bitmap(preloadImg.getResult("bb"));
+			// var bl = new createjs.Bitmap(preloadImg.getResult("bl"));
+			// var br = new createjs.Bitmap(preloadImg.getResult("br"));
+
+			var bt = new createjs.Bitmap("img/border-top.png");
+			var bb = new createjs.Bitmap("img/border-bottom.png");
+			var bl = new createjs.Bitmap("img/border-left.png");
+			var br = new createjs.Bitmap("img/border-right.png");
 
 			bb.y = stageH-18;
 			bl.y = 62;
