@@ -130,7 +130,7 @@
         <allow-intent href="market:*" />
     </platform>
     <platform name="ios">
-		<preference name="Orientation" value="portait" />
+		<preference name="Orientation" value="portrait" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
