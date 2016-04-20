@@ -2,89 +2,86 @@
 <!doctype html>
 <html>
 <head>
-<meta charset="utf-8" />
-<title>ZIM Template</title>
+	<meta charset="utf-8" />
+	<title>A Postman's Quest</title>
 
-<!-- for CreateJS and ZIMjs http://zimjs.com - free to modify - Dan Zen 2015 -->
-<!-- see http://zimjs.com/templates for more templates and meta tags -->
+	<script src="js/zim_2.4.js"></script>
+	<script src="js/createjs-2015.05.21.min.js"></script>
+	<script src="js/swipe.js"></script>
 
-<script type="text/javascript" src="cordova.js"></script>
+	<style>
+		body {margin:0px; padding:0px; background-color:#000;}
+		#myCanvas {position:absolute; background-color:darkred;}
+	</style>
 
-<script>var zon = true; // true for comments from zim code</script>
-<script src="js/zim_2.4.js"></script><!-- add _doc to see code -->
-<script src="js/createjs-2015.05.21.min.js"></script>
-<!-- or can go to zimjs.com and createjs.com for individual modules -->
+	<script>
 
-<style>
-	body {margin:0px; padding:0px; background-color:#000;}
-	#myCanvas {position:absolute; background-color:darkred;}
-</style>
+		var scaling = "fit"; // fit scales to fit the browser window while keeping the aspect ratio
+		var width = 640;
+		var height = 1136;
 
-<script>
+		var showHelp = false;
 
-// SCALING OPTIONS
-// "none"		sets canvas and stage to dimensions and does not scale if window changes
-// "fit"		sets canvas and stage to dimensions and scales to fit inside window size
-// "outside"	sets canvas and stage to dimensions and scales to fit outside window size
-// "full"		sets canvas and stage to window size (canvas is actually set to screen size)
+		var frame = new zim.Frame(scaling, width, height);
+		frame.on("ready", function() {
 
-var scaling = "fit"; // fit scales to fit the browser window while keeping the aspect ratio
-var width = 640;
-var height = 1136;
+			var stage = frame.stage;
+			var stageW = frame.width;
+			var stageH = frame.height;
 
-// Play audio-----------------------------------------
-//
-function playAudio(url) {
-    // Play the audio file at url
-    var my_media = new Media(url,
-        // success callback
-        function() {
-            console.log("playAudio():Audio Success");
-        },
-        // error callback
-        function(err) {
-            console.log("playAudio():Audio Error: "+err);
-    });
+			var instructions = new createjs.Container();
+			//instructions.y = -25;
+			instructions.y = -stageH+25;
+			stage.addChild(instructions);
 
-    // Play audio
-    my_media.play();
+			var c = new zim.Rectangle(stageW, stageH-50, "powderblue");
+			instructions.addChild(c);
+			zim.centerReg(c,stage);
 
-}
+			var cTab = new zim.Rectangle(100, 50, "powderblue",0,0,10);
+			instructions.addChild(cTab);
+			zim.centerReg(cTab,stage);
+			cTab.y = stageH-10;
+			cTab.x = stageW-100;
 
-//--------------------------------------------------
+			var titleH = new createjs.Text("HELP", "bold 24px Arial", "darkred");
+			zim.centerReg(titleH,stage);
+			instructions.addChild(titleH);
+			titleH.y = stageH-10;
+			titleH.x = stageW-100;
 
-var frame = new zim.Frame(scaling, width, height);
-frame.on("ready", function() {
-	zog("ready from ZIM Frame");
+			var text = new createjs.Text("Hello World", "bold 86px Arial", "#ff7700");
+			zim.centerReg(text,c);
+			instructions.addChild(text);
 
-	playAudio("music/duck.mp3");
+	    var distance = 100;
+	    swipe.cjsSwipe(instructions,stage);
+	    instructions.addEventListener("swipe", function(e) {
+	      if (e.swipeY == 1 && showHelp == false){
+					showHelp = true;
+					createjs.Tween.get(instructions)
+							.to({y:-25}, 1000, createjs.Ease.quadIn);
+				}
 
-	var stage = frame.stage;
-	var stageW = frame.width;
-	var stageH = frame.height;
+				if (e.swipeY == -1 && showHelp == true){
+					showHelp = false;
+					createjs.Tween.get(instructions)
+							.to({y:-stageH+25}, 1000, createjs.Ease.quadOut);
+				}
+	    });
 
-	var c = new zim.Circle(100, "powderblue");
-	stage.addChild(c);
-	zim.centerReg(c,stage);
+	    createjs.Ticker.addEventListener("tick", tick);
 
-	c.on("mousedown", function(){
-		zim.animate({
-			target:c,
-			obj:{scale:1.5},
-			time:1500,
-			ease: "elasticOut",
-			props:{rewind:true}
-		});
-	});
-	zim.drag(c);
+	    function tick(){
+	      stage.update();
+	    }
 
-	stage.update();
+			stage.update();
 
-}); // end of ready
-</script>
+		}); // end of ready
+	</script>
 </head>
 
 <body>
-<!-- canvas with id="myCanvas" is made by zim Frame -->
 </body>
 </html>
