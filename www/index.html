@@ -21,17 +21,34 @@
 		var height = 1136;
 
 		var showHelp = false;
+		var showHelp = false;
 
 		var frame = new zim.Frame(scaling, width, height);
 		frame.on("ready", function() {
 
+			imagePath = "img/";
+			imgManifest = [
+				{id:"bt", src:"border-top.png"},
+				{id:"bb", src:"border-bottom.png"},
+				{id:"bl", src:"border-left.png"},
+				{id:"br", src:"border-right.png"}
+			];
+
+			//load images
+			preloadImg = new createjs.LoadQueue(true, imagePath);
+			preloadImg.loadManifest(imgManifest);
+			preloadImg.on("complete", init); //on load, start the game
+
+			}); // end of ready
+
+		function init(){
 			var stage = frame.stage;
 			var stageW = frame.width;
 			var stageH = frame.height;
 
 			var instructions = new createjs.Container();
 			//instructions.y = -25;
-			instructions.y = -stageH+25;
+			instructions.y = -stageH+25+62;
 			stage.addChild(instructions);
 
 			var c = new zim.Rectangle(stageW, stageH-50, "powderblue");
@@ -54,31 +71,44 @@
 			zim.centerReg(text,c);
 			instructions.addChild(text);
 
-	    var distance = 100;
-	    swipe.cjsSwipe(instructions,stage);
-	    instructions.addEventListener("swipe", function(e) {
-	      if (e.swipeY == 1 && showHelp == false){
+			var distance = 100;
+			swipe.cjsSwipe(instructions,stage);
+			instructions.addEventListener("swipe", function(e) {
+				if (e.swipeY == 1 && showHelp == false){
 					showHelp = true;
 					createjs.Tween.get(instructions)
-							.to({y:-25}, 1000, createjs.Ease.quadIn);
+							.to({y:-25-18}, 1000, createjs.Ease.quadIn);
 				}
 
 				if (e.swipeY == -1 && showHelp == true){
 					showHelp = false;
 					createjs.Tween.get(instructions)
-							.to({y:-stageH+25}, 1000, createjs.Ease.quadOut);
+							.to({y:-stageH+25+62}, 1000, createjs.Ease.quadOut);
 				}
-	    });
+			});
 
-	    createjs.Ticker.addEventListener("tick", tick);
+			//ADD THE BORDERS TO THE FRAME!
+			var bt = new createjs.Bitmap(preloadImg.getResult("bt"));
+			var bb = new createjs.Bitmap(preloadImg.getResult("bb"));
+			var bl = new createjs.Bitmap(preloadImg.getResult("bl"));
+			var br = new createjs.Bitmap(preloadImg.getResult("br"));
 
-	    function tick(){
-	      stage.update();
-	    }
+			bb.y = stageH-18;
+			bl.y = 62;
+			br.x = stageW - 18;
+			br.y = 62;
 
-			stage.update();
+			stage.addChild(bt);
+			stage.addChild(bb);
+			stage.addChild(bl);
+			stage.addChild(br);
 
-		}); // end of ready
+			createjs.Ticker.addEventListener("tick", tick);
+
+			function tick(){
+				stage.update();
+			}
+		}
 	</script>
 </head>
 
