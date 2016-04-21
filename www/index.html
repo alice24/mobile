@@ -67,7 +67,15 @@
 			his.y = stageH - 18 - 268;
 			stage.addChild(his);
 
-			var btnM = new createjs.Bitmap("img/btn_mail.png");
+			var mailSpriteSheet = new createjs.SpriteSheet({
+				images: ["img/btn_mail.png"],
+				frames: {width:48, height:36},
+				animations:{
+					float: [0,3, true, 0.25]
+				}
+			});
+
+			var btnM = new createjs.Sprite(mailSpriteSheet, "float");
 			btnM.x = stageW - 18 - 15 - 48;
 			btnM.y = stageH - 18 - 15 - 36;
 			stage.addChild(btnM);
