@@ -10,6 +10,10 @@
 	<script src="js/swipe.js"></script>
 
 	<style>
+		@font-face {
+			font-family: strawberry;
+			src: url(fonts/strawberry.ttf);
+		}
 		body {margin:0px; padding:0px; background-color:#000;}
 		#myCanvas {position:absolute; background-color:darkred;}
 	</style>
@@ -20,24 +24,25 @@
 		var width = 640;
 		var height = 1136;
 
+		var chosenNum = [];
+
 		var showHelp = false;
 		var showHelp = false;
+
+		var xTotal = 3;
+		var yTotal = 5;
+
+		var counter = 0;
+		var labelCounter = 0;
+		var dialogue=[
+			"Wow! I can't believe how ghetto this\n\ngame looks right now! Amazing!",
+			"Hopefully this is going to work!\n\nOtherwise UMMMMMMMM please fix."
+		]
 
 		var frame = new zim.Frame(scaling, width, height);
 		frame.on("ready", function() {
 
-			imagePath = "img/";
-			imgManifest = [
-				{id:"bt", src:"border-top.png"},
-				{id:"bb", src:"border-bottom.png"},
-				{id:"bl", src:"border-left.png"},
-				{id:"br", src:"border-right.png"}
-			];
-
-			//load images
-			preloadImg = new createjs.LoadQueue(true, imagePath);
-			preloadImg.loadManifest(imgManifest);
-			preloadImg.on("complete", init); //on load, start the game
+			init();
 
 			}); // end of ready
 
@@ -46,28 +51,126 @@
 			var stageW = frame.width;
 			var stageH = frame.height;
 
+
+			//SCREEN ONE- THE GAME
+			var bgg = new createjs.Bitmap("img/bg_game.png");
+			bgg.x = 18;
+			bgg.y = 62;
+			stage.addChild(bgg);
+
+			var tBox = new zim.Rectangle(640, 184, "#e6c5a7","#83675b",1);
+			tBox.y = stageH-184;
+			stage.addChild(tBox);
+
+			var his = new createjs.Bitmap("img/headshot_game.png");
+			his.x = 18;
+			his.y = stageH - 18 - 268;
+			stage.addChild(his);
+
+			var btnM = new createjs.Bitmap("img/btn_mail.png");
+			btnM.x = stageW - 18 - 15 - 48;
+			btnM.y = stageH - 18 - 15 - 36;
+			stage.addChild(btnM);
+
+			var tContent = new createjs.Text(dialogue[counter], "24px strawberry", "#583f3b");
+			stage.addChild(tContent);
+			tContent.y = stageH-184+38;
+			tContent.x = 18+190+20;
+
+			tBox.addEventListener("click", function(e){
+				if (counter == 0){
+					counter ++;
+					tContent.text = dialogue[counter];
+				}
+			});
+
+
+			//placing the houses 64x64
+			var houses = new createjs.Container();
+			stage.addChild(houses);
+
+			var size = 64;
+			var hCon, house, rect;
+			for (var i=0; i<xTotal; i++) { //138 from left
+				for (var j=0; j<yTotal; j++) { //185 from top
+					hCon = new createjs.Container();
+					hCon.mouseChildren = false;
+
+					rect = new zim.Rectangle(64, 64, "#333");
+					rect.alpha=0.1;
+					hCon.addChild(rect);
+					houses.addChild(hCon);
+
+					hCon.x = i*(size*2);
+					hCon.y = j*(size*2);
+					labelCounter++;
+					hCon.gid = labelCounter;
+					hCon.placeHouse = false;
+					house = new createjs.Bitmap("img/house.png");
+					house.alpha = 0;
+					hCon.addChild(house);
+				}
+			}
+			houses.x = 18 + 138;
+			houses.y = 62 + 185;
+
+			houses.cursor = "pointer";
+			houses.on("mousedown", function(e) {
+				console.log(e.target.gid);
+
+				if (e.target.placeHouse == false){
+					e.target.getChildAt(0).alpha = 0;
+					e.target.getChildAt(1).alpha = 1;
+					e.target.placeHouse = true;
+					chosenNum.push(e.target.gid);
+				}
+
+				else if (e.target.placeHouse == true){
+					e.target.getChildAt(0).alpha = 0.1;
+					e.target.getChildAt(1).alpha = 0;
+					e.target.placeHouse = false;
+					var index = chosenNum.indexOf(e.target.gid);
+					chosenNum.splice(index,1);
+
+				}
+
+				console.log(chosenNum);
+				stage.update();
+			});
+
+
+
+			//-------------------------------------------------------
+
+
+			// SCREEN TWO, THE INSTRUCTIONS/HINTS
 			var instructions = new createjs.Container();
-			//instructions.y = -25;
 			instructions.y = -stageH+25+62;
 			stage.addChild(instructions);
 
-			var c = new zim.Rectangle(stageW, stageH-50, "powderblue");
-			instructions.addChild(c);
-			zim.centerReg(c,stage);
+			var cGray = new zim.Rectangle(stageW, 200, "#333");
+			cGray.alpha=0;
+			instructions.addChild(cGray);
+			zim.centerReg(cGray,stage);
+			cGray.y = stageH-10;
 
-			var cTab = new zim.Rectangle(100, 50, "powderblue",0,0,10);
+			var cTab = new zim.Rectangle(150, 100, "#583f3b","#e6c5a7",2,10);
 			instructions.addChild(cTab);
 			zim.centerReg(cTab,stage);
 			cTab.y = stageH-10;
-			cTab.x = stageW-100;
+			cTab.x = stageW-110;
 
-			var titleH = new createjs.Text("HELP", "bold 24px Arial", "darkred");
+			var c = new zim.Rectangle(stageW, stageH-50, "#583f3b",0,2);
+			instructions.addChild(c);
+			zim.centerReg(c,stage);
+
+			var titleH = new createjs.Text("?", "48px strawberry", "#e6c5a7");
 			zim.centerReg(titleH,stage);
 			instructions.addChild(titleH);
-			titleH.y = stageH-10;
-			titleH.x = stageW-100;
+			titleH.y = stageH;
+			titleH.x = stageW-105;
 
-			var text = new createjs.Text("Hello World", "bold 86px Arial", "#ff7700");
+			var text = new createjs.Text("Hello World", "bold 72px strawberry", "#eddac2");
 			zim.centerReg(text,c);
 			instructions.addChild(text);
 
@@ -77,22 +180,21 @@
 				if (e.swipeY == 1 && showHelp == false){
 					showHelp = true;
 					createjs.Tween.get(instructions)
-							.to({y:-25-18}, 1000, createjs.Ease.quadIn);
+							.to({y:-50-18}, 1000, createjs.Ease.quadIn)
+							.call(function(){cGray.alpha=0.5;});
 				}
 
 				if (e.swipeY == -1 && showHelp == true){
+					cGray.alpha=0;
 					showHelp = false;
 					createjs.Tween.get(instructions)
 							.to({y:-stageH+25+62}, 1000, createjs.Ease.quadOut);
 				}
 			});
 
-			//ADD THE BORDERS TO THE FRAME!
-			// var bt = new createjs.Bitmap(preloadImg.getResult("bt"));
-			// var bb = new createjs.Bitmap(preloadImg.getResult("bb"));
-			// var bl = new createjs.Bitmap(preloadImg.getResult("bl"));
-			// var br = new createjs.Bitmap(preloadImg.getResult("br"));
+			//-------------------------------------------------------
 
+			//SCREEN THREE - ADD THE BORDERS TO THE FRAME!
 			var bt = new createjs.Bitmap("img/border-top.png");
 			var bb = new createjs.Bitmap("img/border-bottom.png");
 			var bl = new createjs.Bitmap("img/border-left.png");
