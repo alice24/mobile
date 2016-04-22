@@ -7,7 +7,6 @@
 
 	<script src="js/zim_2.4.js"></script>
 	<script src="js/createjs-2015.05.21.min.js"></script>
-	<script src="js/swipe.js"></script>
 
 	<style>
 		@font-face {
@@ -98,7 +97,7 @@
 
 				//objects
 				{id:"headshot", src:"headshot_game.png"},
-				{id:"house", src:"house.png"}
+				{id:"house", src:"house.png"},
 			];
 
 			//load images
@@ -315,7 +314,7 @@
 											"are side by side. Look for easy clues first!\n\n" +
 											"(Isaac has a weird memory...please help him.)\n\n\n" +
 											"This screen pauses the timer, don't worry!\n\n" +
-											"Swipe up to close this!";
+											"Click to close this!";
 
 			var howTo = new createjs.Text(howToText, "24px strawberry", "#fff");
 			howTo.x = 50;
@@ -344,25 +343,21 @@
 			iRect.y = 62 + 220
 			instructions.addChild(iRect);
 
-			var distance = 100;
-			swipe.cjsSwipe(instructions,stage);
-			instructions.addEventListener("swipe", function(e) {
-				if (e.swipeY == 1 && showHelp == false){
+			instructions.addEventListener("click", function(e) {
+				if (showHelp == false){
 					showHelp = true;
 					createjs.Tween.get(instructions)
 							.to({y:-50-18}, 1000, createjs.Ease.quadIn)
 							.call(function(){cGray.alpha=0.5;});
 				}
 
-				else if (e.swipeY == -1 && showHelp == true){
+				else if (showHelp == true){
 					cGray.alpha=0;
 					showHelp = false;
 					createjs.Tween.get(instructions)
 							.to({y:-stageH+25+62}, 1000, createjs.Ease.quadOut);
 				}
 			});
-
-
 
 			function displayHints(arr){
 				var displayStr = '(the letters and numbers are initials for the streets)\n\n"I remember there are..."\n';
@@ -764,7 +759,6 @@
 				pauseTime = 0;
 				time = 0;
 				timerText.text = "300s";
-
 				clockTab.alpha = 1;
 				houses.alpha = 1;
 				timerText.alpha = 1;
