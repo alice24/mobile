@@ -30,7 +30,6 @@
 		var clue;
 
 		var showHelp = false;
-		var showHelp = false;
 
 		var xTotal = 3;
 		var yTotal = 5;
@@ -266,11 +265,11 @@
 
 			// SCREEN TWO, THE INSTRUCTIONS/HINTS
 			var instructions = new createjs.Container();
-			instructions.y = -stageH+25+62;
+			instructions.y = -50-18;
 			stage.addChild(instructions);
 
 			var cGray = new zim.Rectangle(stageW, 200, "#333");
-			cGray.alpha=0;
+			cGray.alpha=0.5;
 			instructions.addChild(cGray);
 			zim.centerReg(cGray,stage);
 			cGray.y = stageH-10;
@@ -352,6 +351,8 @@
 							.to({y:-stageH+25+62}, 1000, createjs.Ease.quadOut);
 				}
 			});
+
+			showHelp = true;
 
 			function displayHints(arr){
 				var displayStr = '(the letters are initials for the streets)\n\n"I remember there are..."\n';
@@ -489,10 +490,10 @@
 			//ticker controls the timer...also used to show the animations
 			createjs.Ticker.addEventListener("tick", tick);
 
-			var time;
+			var time=0;
 			var previousTime;
 			var pauseTime = 0;
-			var totalTime = 3;
+			var totalTime = 300;
 			var totalPausedTime = 0;
 
 			function tick(){
