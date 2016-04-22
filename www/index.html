@@ -53,7 +53,7 @@
 
 
 			//SCREEN ONE- THE GAME
-			var bgg = new createjs.Bitmap("img/bg_game.png");
+			var bgg = new createjs.Bitmap("img/bg_game_overlay.png");
 			bgg.x = 18;
 			bgg.y = 62;
 			stage.addChild(bgg);
@@ -62,9 +62,22 @@
 			tBox.y = stageH-184;
 			stage.addChild(tBox);
 
-			var his = new createjs.Bitmap("img/headshot_game.png");
-			his.x = 18;
-			his.y = stageH - 18 - 268;
+			var isaacSpriteSheet = new createjs.SpriteSheet({
+				images: ["img/headshot_game.png"],
+				frames: {width:154, height:203},
+				animations:{
+					normal: [0],
+					think: [1],
+					wrong: [2],
+					excite: [3],
+					win: [4],
+					lose: [5]
+				}
+			});
+
+			var his = new createjs.Sprite(isaacSpriteSheet, "normal");
+			his.x = 18 + 25;
+			his.y = stageH - 18 - 203;
 			stage.addChild(his);
 
 			var mailSpriteSheet = new createjs.SpriteSheet({
