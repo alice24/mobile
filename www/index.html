@@ -26,23 +26,54 @@
 
 		var chosenNum = [];
 
+		var puzzle;
+		var clue;
+
 		var showHelp = false;
 		var showHelp = false;
 
 		var xTotal = 3;
 		var yTotal = 5;
 
-		var scene = "none";
+		var scene = "game";
 
 		var gamePlay = true;
 
 		var preloadImg;
 
-		var counter = 0;
+		var counter = 0; // for dialogue
 		var labelCounter = 0;
 		var dialogue=[
 			"Wow! I can't believe how ghetto this\n\ngame looks right now! Amazing!",
 			"Hopefully this is going to work!\n\nOtherwise UMMMMMMMM please fix."
+		]
+
+		var puzzles = [
+			[4,6,7,8,9,10,14],
+			[1,3,6,7,8,11,13],
+			[1,2,3,4,5,7,9],
+
+			[3,4,6,7,13,14],
+			[3,7,8,9,13,15],
+			[2,3,7,9,12,14],
+
+			[3,7,9,13,14],
+			[2,3,7,9,12],
+			[2,4,6,7,8]
+		]
+
+		var clues = [
+			["1 house","5 houses","1 house","1 house","1 house","1 house","3 houses","1 house"],
+			["2 houses not side by side","3 houses","2 houses not side by side","3 houses","1 house","3 houses","0 houses","0 houses"],
+			["5 houses","2 houses not side by side","0 houses","1 house","2 houses","1 house","2 houses","1 house"],
+
+			["2 houses","2 houses","2 houses","1 house","1 house","2 houses not side by side","2 houses not side by side","0 houses"],
+			["1 house","3 houses","2 houses not side by side","0 houses","1 house","3 houses","1 house","1 house"],
+			["2 houses","2 houses not side by side","2 houses not side by side","0 houses","3 houses","1 house","2 houses","0 houses"],
+
+			["1 house","2 houses not side by side","2 houses","0 houses","2 houses","2 houses not side by side","1 house","0 houses"],
+			["2 houses","2 houses not side by side","1 house","0 houses","3 houses","1 house","1 house","0 houses"],
+			["2 houses not side by side","3 houses","0 houses","1 house","2 houses","1 house","1 house","0 houses"]
 		]
 
 		var frame = new zim.Frame(scaling, width, height);
@@ -80,30 +111,30 @@
 			preloadImg = new createjs.LoadQueue(false, imagePath);
 			preloadImg.loadManifest(imgManifest);
 			preloadImg.on("complete", init); //on load, start the game
+		}); // end of ready
+		//-------------------------------------------------------
 
-			}); // end of ready
-
+		//main function
 		function init(){
+			//-------------------------------------------------------
 			var stage = frame.stage;
 			var stageW = frame.width;
 			var stageH = frame.height;
-
+			//-------------------------------------------------------
 
 			//SCREEN ONE- THE GAME
+			//determine the puzzle
+			var newNum = Math.floor(Math.random()*puzzles.length);
+
+			puzzle = puzzles[newNum];
+			clue = clues[newNum];
+			console.log(puzzle);
+			console.log(clue);
+
 			var bgg = new createjs.Bitmap(preloadImg.getResult("bggOverlay"));
 			bgg.x = 18;
 			bgg.y = 62;
 			stage.addChild(bgg);
-
-			var btnChange = new createjs.Bitmap(preloadImg.getResult("btnChange"));
-			stage.addChild(btnChange);
-			btnChange.x = stageW - 18 - 3 - 100;
-			btnChange.y = stageH - 18 - 184 - 42;
-
-			btnChange.addEventListener("click", function(e){
-				console.log("change puzzle");
-			});
-
 
 			//placing the houses 64x64
 			var houses = new createjs.Container();
@@ -134,10 +165,7 @@
 			houses.x = 18 + 138;
 			houses.y = 62 + 185;
 
-			houses.cursor = "pointer";
 			houses.on("mousedown", function(e) {
-				console.log(e.target.gid);
-
 				if (e.target.placeHouse == false){
 					e.target.getChildAt(0).alpha = 0;
 					e.target.getChildAt(1).alpha = 1;
@@ -151,11 +179,7 @@
 					e.target.placeHouse = false;
 					var index = chosenNum.indexOf(e.target.gid);
 					chosenNum.splice(index,1);
-
 				}
-
-				console.log(chosenNum);
-				stage.update();
 			});
 
 			var lbg = new createjs.Bitmap(preloadImg.getResult("bgLose"));
@@ -217,18 +241,25 @@
 			btnM.y = stageH - 18 - 15 - 36;
 			stage.addChild(btnM);
 
-			var tContent = new createjs.Text(dialogue[counter], "24px strawberry", "#583f3b");
+			var tContent = new createjs.Text("", "24px strawberry", "#583f3b");
 			stage.addChild(tContent);
 			tContent.y = stageH-184+38;
 			tContent.x = 18+190+20;
 
+			displayDialogue(counter);
+
 			tBox.addEventListener("click", function(e){
-				if (counter == 0){
-					counter ++;
-					tContent.text = dialogue[counter];
-				}
+				displayDialogue(counter);
 			});
 
+			var btnChange = new createjs.Bitmap(preloadImg.getResult("btnChange"));
+			stage.addChild(btnChange);
+			btnChange.x = stageW - 18 - 3 - 100;
+			btnChange.y = stageH - 18 - 184 - 42;
+
+			btnChange.addEventListener("click", function(e){
+				resetGame();
+			});
 			//-------------------------------------------------------
 
 
@@ -259,9 +290,39 @@
 			titleH.y = stageH+10;
 			titleH.x = stageW-105;
 
-			var text = new createjs.Text("Hello World", "bold 72px strawberry", "#eddac2");
-			zim.centerReg(text,c);
-			instructions.addChild(text);
+			var howToT = new createjs.Text("How to Play", "60px strawberry", "#eddac2");
+			zim.centerReg(howToT,stage);
+			howToT.y = 62 + 135;
+			instructions.addChild(howToT);
+
+			var howToText = "Click on the dark squares to set a house!\n\n" +
+											"Click the house to remove it if it's wrong.\n\n" +
+											"Check below for clues on house placements.\n\n\n" +
+											"Isaac will let you know if the houses are\n\n" +
+											"beside each other or spaced out.\n\n" +
+											"(he has a weird memory...)\n\n\n" +
+											"This screen pauses the timer, don't worry!\n\n" +
+											"Swipe up to close this!";
+
+			var howTo = new createjs.Text(howToText, "24px strawberry", "#fff");
+			howTo.x = 50;
+			howTo.y = 62 + 135 + 50;
+			instructions.addChild(howTo);
+
+			var hintsT = new createjs.Text("Hints", "60px strawberry", "#eddac2");
+			zim.centerReg(hintsT,stage);
+			hintsT.y = stageH/2 + 50;
+			instructions.addChild(hintsT);
+
+			var hintsText = displayHints(clue);
+
+			var hints = new createjs.Text(hintsText, "24px strawberry", "#fff");
+			//zim.centerReg(hints,stage);
+			hints.textAlign = "center";
+			hints.textBaseline = "middle";
+			hints.x = stageW/2;
+			hints.y = stageH/2 + 118;
+			instructions.addChild(hints);
 
 			var distance = 100;
 			swipe.cjsSwipe(instructions,stage);
@@ -281,12 +342,46 @@
 				}
 			});
 
-			function loseGame(){
-				lbg.alpha = 1;
-				his.gotoAndStop("lose");
-				tContent.text = "u suck lol"
+			function displayHints(arr){
+				var displayStr = '(the letters are initials for the streets)\n\n"I remember there are..."\n';
+
+				displayStr += "\n\n" + arr[0] + " between fp and tt";
+				displayStr += "\n\n" + arr[1] + " between tt and ll";
+				displayStr += "\n\n" + arr[2] + " between ll and rw";
+
+				displayStr += "\n\n" + arr[3] + " between 1st and 2nd";
+				displayStr += "\n\n" + arr[4] + " between 2nd and 3rd";
+				displayStr += "\n\n" + arr[5] + " between 3rd and 4th";
+				displayStr += "\n\n" + arr[6] + " between 4th and 5th";
+				displayStr += "\n\n" + arr[7] + " between 5th and 6th";
+
+				return displayStr;
 			}
 
+			function displayDialogue(num){
+				if (scene == "intro"){
+
+				}
+				else if (scene == "game"){
+					switch (num){
+						case 0:
+							his.gotoAndStop("excite");
+							tContent.text = "Let's get cracking!\n\n(Click here when you're done!)";
+							counter ++;
+							break;
+						case 1:
+							checkWin();
+							break;
+					}
+
+				}
+				else if (scene == "win"){
+
+				}
+				else if (scene == "lose"){
+
+				}
+			}
 			//-------------------------------------------------------
 
 			//ADD THE BORDERS TO THE FRAME! Must be above everything else.
@@ -315,7 +410,7 @@
 			timerText.textBaseline = 'middle';
 			zim.centerReg(timerText,stage);
 			stage.addChild(timerText);
-			timerText.y = 62 + 35;
+			timerText.y = 62 + 40;
 			timerText.x = 18 + 71;
 
 			//ticker controls the timer...also used to show the animations
@@ -335,21 +430,114 @@
 					time = Math.floor((currentTime-startTime)/1000);
 					timerText.text = (totalTime - time + totalPausedTime) + "s";
 					if (timerText.text == "0s"){
-						gamePlay = false;
 						loseGame();
 					}
-					console.log(timerText.text);
 				}
 				else if (showHelp == true && gamePlay == true){
 					pauseTime = Math.floor(((new Date()).getTime()-startTime)/1000)-time;
-					console.log(pauseTime);
 				}
 
 				previousTime = time;
 
 				stage.update();
 			}
-		}
+			//-------------------------------------------------------
+
+			// game related functions
+			function checkWin(){
+				if ( chosenNum.length > puzzle.length || chosenNum.length < puzzle.length ){
+					his.gotoAndStop("wrong");
+					tContent.text="I'm pretty sure there were\n\n" + puzzle.length + " houses though..."
+
+					setTimeout(function(){
+						his.gotoAndStop("think");
+						tContent.text="Hm... where were the houses again?\n\n(Click here when you're done!)"
+					},5000);
+				}
+				else{
+					var gameWon = true;
+
+					for (var i=0; i<chosenNum.length; i++){
+						var numFound = false;
+						for (var j=0; j<puzzle.length; j++){
+							if (chosenNum[i]==puzzle[j]){
+								numFound = true;
+								break;
+							}
+						}
+						if (numFound == false){
+							gameWon = false;
+							break;
+						}
+					}
+
+					if (gameWon == false){
+						his.gotoAndStop("wrong");
+						tContent.text="I don't think that's right...\n\nI'd better think about it more."
+
+						setTimeout(function(){
+							his.gotoAndStop("think");
+							tContent.text="Hm... where were the houses again?\n\n(Click here when you're done!)"
+						},5000);
+					}
+					else{
+						winGame();
+					}
+				}
+			}
+
+			function winGame(){
+				stopGame();
+				wbg.alpha = 1;
+				his.gotoAndStop("win");
+				tContent.text = "I'm awesome!!";
+			}
+
+			function loseGame(){
+				stopGame();
+				lbg.alpha = 1;
+				his.gotoAndStop("lose");
+				tContent.text = "u suck lol";
+			}
+
+			function stopGame(){
+				gamePlay = false;
+				instructions.alpha = 0;
+				timerText.alpha = 0;
+				clockTab.alpha = 0;
+				houses.alpha = 0;
+			}
+
+			function resetGame(){
+				for (var i = 0; i< houses.getNumChildren(); i++ ){
+					houses.children[i].getChildAt(0).alpha = 0.1;
+					houses.children[i].getChildAt(1).alpha = 0;
+					houses.children[i].placeHouse = false;
+				}
+				chosenNum = [];
+				gamePlay = true;
+				startTime = (new Date()).getTime();
+				totalPausedTime = 0;
+				clockTab.alpha = 1;
+				houses.alpha = 1;
+				timerText.alpha = 1;
+				instructions.alpha = 1;
+
+				scene = "game";
+				counter = 0;
+				displayDialogue(counter);
+
+				newNum = Math.floor(Math.random()*puzzles.length);
+				puzzle = puzzles[newNum];
+				clue = clues[newNum];
+				console.log(clue);
+				console.log(puzzle);
+				lbg.alpha = 0;
+				wbg.alpha = 0;
+			}
+			//-------------------------------------------------------
+
+		} // end init
 	</script>
 </head>
 
