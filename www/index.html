@@ -58,7 +58,7 @@
 			[2,3,7,9,12,14],
 
 			[3,7,9,12,13],
-			[2,3,7,9,12],
+			[1,2,7,9,12],
 			[2,4,6,7,8]
 		]
 
@@ -72,7 +72,7 @@
 			["2 houses","2 houses not side by side","2 houses not side by side","0 houses","3 houses","1 house","2 houses","0 houses"],
 
 			["1 house","2 houses not side by side","2 houses","0 houses","2 houses","2 houses not side by side","1 house","0 houses"],
-			["2 houses","2 houses not side by side","1 house","0 houses","3 houses","1 house","1 house","0 houses"],
+			["2 houses","2 houses not side by side","1 house","1 house","3 houses","0 houses","1 house","0 houses"],
 			["2 houses not side by side","3 houses","0 houses","1 house","2 houses","1 house","1 house","0 houses"]
 		]
 
@@ -309,7 +309,7 @@
 			howTo.y = 62 + 135 + 50;
 			instructions.addChild(howTo);
 
-			var hintsT = new createjs.Text("Hints", "60px strawberry", "#eddac2");
+			var hintsT = new createjs.Text("! Important !", "60px strawberry", "#eddac2");
 			zim.centerReg(hintsT,stage);
 			hintsT.y = stageH/2 + 50;
 			instructions.addChild(hintsT);
@@ -323,6 +323,16 @@
 			hints.x = stageW/2;
 			hints.y = stageH/2 + 118;
 			instructions.addChild(hints);
+
+			var iHouse = new createjs.Bitmap(preloadImg.getResult("house"));
+			iHouse.x = stageW - 64 - 60;
+			iHouse.y = 62 + 350
+			instructions.addChild(iHouse);
+
+			var iRect = new zim.Rectangle(64, 64, "#333");
+			iRect.x = stageW - 64 - 60;
+			iRect.y = 62 + 220
+			instructions.addChild(iRect);
 
 			var distance = 100;
 			swipe.cjsSwipe(instructions,stage);
@@ -530,6 +540,8 @@
 				newNum = Math.floor(Math.random()*puzzles.length);
 				puzzle = puzzles[newNum];
 				clue = clues[newNum];
+				hintsText = displayHints(clue);
+				hints.text = hintsText;
 				console.log(clue);
 				console.log(puzzle);
 				lbg.alpha = 0;
