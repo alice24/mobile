@@ -250,6 +250,7 @@
 
 			tBox.addEventListener("click", function(e){
 				displayDialogue(counter);
+				counter ++;
 			});
 
 			var btnChange = new createjs.Bitmap(preloadImg.getResult("btnChange"));
@@ -369,6 +370,7 @@
 			}
 
 			function displayDialogue(num){
+				console.log(num);
 				if (scene == "intro"){
 
 				}
@@ -386,10 +388,71 @@
 
 				}
 				else if (scene == "win"){
-
+					switch (num){
+						case 0:
+							his.gotoAndStop("win");
+							tContent.text = "There we go! That wasn't\n\nhard at all!";
+							break;
+						case 1:
+							tContent.text = "Now I'll go hand this map over\n\nand I'll have done my duty!";
+							break;
+						case 2:
+							tContent.text = "I'm (you're) awesome!"
+							break;
+						case 3:
+							his.gotoAndStop("normal");
+							tContent.text = "(And so, the postmaster finished the\n\nroute map and handed it to the\n\npostman.)";
+							break;
+						case 4:
+							tContent.text = "(The grateful soul finished at least\n\nan entire 10 minutes on his delivery,\n\nfrom the time he saved!)";
+							break;
+						case 5:
+							tContent.text = "(After all, not having to... wait,\n\nwhat does this map even do?)";
+							break;
+						case 6:
+							his.gotoAndStop("think");
+							tContent.text = "(Couldn't he have just, well,\n\nLOOKED at the houses?)";
+							break;
+						case 7:
+							tContent.text = "(There were only " + puzzle.length + " houses!\n\nWas it even worth all the trouble?!)";
+							break;
+						case 8:
+							his.gotoAndStop("win");
+							tContent.text = "Whatever! The point was that I, the\n\ngreat postmaster, was very useful!";
+							break;
+						case 9:
+							his.gotoAndStop("excite");
+							tContent.text = "AND THAT'S THE END!\n\n(How anticlimactic...)";
+							break;
+						case 10:
+							his.gotoAndStop("normal");
+							tContent.text = "(Want to play again?\n\nClick 'change puzzle' to try another!)";
+							break;
+					}
 				}
 				else if (scene == "lose"){
-
+					switch (num){
+						case 0:
+							his.gotoAndStop("lose");
+							tContent.text = "(And so, you failed...)";
+							break;
+						case 1:
+							tContent.text = "It was a fluke! A fluke!\n\nI can definitely get it next time!";
+							break;
+						case 2:
+							tContent.text = "(The poor postman had to go through\n\nand actually use their eyes...)";
+							break;
+						case 3:
+							tContent.text = "(Which isn't a lot of work if you think\n\nabout it. Was this thing even going to\n\nbe useful?)";
+							break;
+						case 4:
+							tContent.text = "It's just a bad day!\n\nGive me another chance!";
+							break;
+						case 5:
+							his.gotoAndStop("think");
+							tContent.text = "(Care to play again?\n\nJust click on 'Change Puzzle' to\n\ngive it another go!)"
+							break;
+					}
 				}
 			}
 			//-------------------------------------------------------
@@ -429,7 +492,7 @@
 			var time;
 			var previousTime;
 			var pauseTime = 0;
-			var totalTime = 300;
+			var totalTime = 3;
 			var totalPausedTime = 0;
 
 			function tick(){
@@ -461,8 +524,9 @@
 
 					setTimeout(function(){
 						his.gotoAndStop("think");
+						counter = 1;
 						tContent.text="Hm... where were the houses again?\n\n(Click here when you're done!)"
-					},5000);
+					},3000);
 				}
 				else{
 					var gameWon = true;
@@ -487,8 +551,9 @@
 
 						setTimeout(function(){
 							his.gotoAndStop("think");
+							counter = 1;
 							tContent.text="Hm... where were the houses again?\n\n(Click here when you're done!)"
-						},5000);
+						},3000);
 					}
 					else{
 						winGame();
@@ -499,15 +564,18 @@
 			function winGame(){
 				stopGame();
 				wbg.alpha = 1;
-				his.gotoAndStop("win");
-				tContent.text = "I'm awesome!!";
+				scene = "win";
+				counter = 0;
+				displayDialogue(counter);
 			}
 
 			function loseGame(){
 				stopGame();
 				lbg.alpha = 1;
-				his.gotoAndStop("lose");
-				tContent.text = "u suck lol";
+				scene = "lose";
+				counter = 0;
+				displayDialogue(counter);
+				counter++;
 			}
 
 			function stopGame(){
