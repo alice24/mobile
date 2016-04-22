@@ -64,7 +64,7 @@
 
 			var isaacSpriteSheet = new createjs.SpriteSheet({
 				images: ["img/headshot_game.png"],
-				frames: {width:154, height:203},
+				frames: {width:178, height:229},
 				animations:{
 					normal: [0],
 					think: [1],
@@ -75,9 +75,9 @@
 				}
 			});
 
-			var his = new createjs.Sprite(isaacSpriteSheet, "normal");
-			his.x = 18 + 25;
-			his.y = stageH - 18 - 203;
+			var his = new createjs.Sprite(isaacSpriteSheet, "excite");
+			his.x = 18 + 15;
+			his.y = stageH - 18 - 229;
 			stage.addChild(his);
 
 			var mailSpriteSheet = new createjs.SpriteSheet({
@@ -103,6 +103,15 @@
 					counter ++;
 					tContent.text = dialogue[counter];
 				}
+			});
+
+			var btnChange = new createjs.Bitmap("img/btn_change.png");
+			stage.addChild(btnChange);
+			btnChange.x = stageW - 18 - 3 - 100;
+			btnChange.y = stageH - 18 - 184 - 42;
+
+			btnChange.addEventListener("click", function(e){
+				console.log("change puzzle");
 			});
 
 
@@ -159,7 +168,16 @@
 				stage.update();
 			});
 
+			var startTime = (new Date()).getTime();
 
+			var clockTab = new createjs.Bitmap("img/bg_timer.png");
+			stage.addChild(clockTab);
+
+			var timerText = new createjs.Text("300s", "32px strawberry", "#583f3b");
+			zim.centerReg(timerText,stage);
+			stage.addChild(timerText);
+			timerText.y = 62 + 30;
+			timerText.x = 18 + 67;
 
 			//-------------------------------------------------------
 
@@ -234,6 +252,10 @@
 			createjs.Ticker.addEventListener("tick", tick);
 
 			function tick(){
+				currentTime = (new Date()).getTime();
+				var time = Math.floor((currentTime-startTime)/1000);
+				timerText.text = (300 - time) + "s";
+
 				stage.update();
 			}
 		}
