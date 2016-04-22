@@ -32,6 +32,10 @@
 		var xTotal = 3;
 		var yTotal = 5;
 
+		var scene = "none";
+
+		var gamePlay = true;
+
 		var counter = 0;
 		var labelCounter = 0;
 		var dialogue=[
@@ -57,53 +61,6 @@
 			bgg.x = 18;
 			bgg.y = 62;
 			stage.addChild(bgg);
-
-			var tBox = new zim.Rectangle(640, 184, "#e6c5a7","#83675b",1);
-			tBox.y = stageH-184;
-			stage.addChild(tBox);
-
-			var isaacSpriteSheet = new createjs.SpriteSheet({
-				images: ["img/headshot_game.png"],
-				frames: {width:178, height:229},
-				animations:{
-					normal: [0],
-					think: [1],
-					wrong: [2],
-					excite: [3],
-					win: [4],
-					lose: [5]
-				}
-			});
-
-			var his = new createjs.Sprite(isaacSpriteSheet, "excite");
-			his.x = 18 + 15;
-			his.y = stageH - 18 - 229;
-			stage.addChild(his);
-
-			var mailSpriteSheet = new createjs.SpriteSheet({
-				images: ["img/btn_mail.png"],
-				frames: {width:48, height:36},
-				animations:{
-					float: [0,3, true, 0.25]
-				}
-			});
-
-			var btnM = new createjs.Sprite(mailSpriteSheet, "float");
-			btnM.x = stageW - 18 - 15 - 48;
-			btnM.y = stageH - 18 - 15 - 36;
-			stage.addChild(btnM);
-
-			var tContent = new createjs.Text(dialogue[counter], "24px strawberry", "#583f3b");
-			stage.addChild(tContent);
-			tContent.y = stageH-184+38;
-			tContent.x = 18+190+20;
-
-			tBox.addEventListener("click", function(e){
-				if (counter == 0){
-					counter ++;
-					tContent.text = dialogue[counter];
-				}
-			});
 
 			var btnChange = new createjs.Bitmap("img/btn_change.png");
 			stage.addChild(btnChange);
@@ -168,6 +125,60 @@
 				stage.update();
 			});
 
+			var lbg = new createjs.Bitmap("img/bg_lose.png");
+			lbg.x = 18;
+			lbg.y = 62;
+			lbg.alpha = 0;
+			stage.addChild(lbg);
+
+			var tBox = new zim.Rectangle(640, 184, "#e6c5a7","#83675b",1);
+			tBox.y = stageH-184;
+			stage.addChild(tBox);
+
+			var isaacSpriteSheet = new createjs.SpriteSheet({
+				images: ["img/headshot_game.png"],
+				frames: {width:178, height:229},
+				animations:{
+					normal: [0],
+					think: [1],
+					wrong: [2],
+					excite: [3],
+					win: [4],
+					lose: [5]
+				}
+			});
+
+			var his = new createjs.Sprite(isaacSpriteSheet, "excite");
+			his.x = 18 + 15;
+			his.y = stageH - 18 - 229;
+			stage.addChild(his);
+
+			var mailSpriteSheet = new createjs.SpriteSheet({
+				images: ["img/btn_mail.png"],
+				frames: {width:48, height:36},
+				animations:{
+					float: [0,3, true, 0.25]
+				}
+			});
+
+			var btnM = new createjs.Sprite(mailSpriteSheet, "float");
+			btnM.x = stageW - 18 - 15 - 48;
+			btnM.y = stageH - 18 - 15 - 36;
+			stage.addChild(btnM);
+
+			var tContent = new createjs.Text(dialogue[counter], "24px strawberry", "#583f3b");
+			stage.addChild(tContent);
+			tContent.y = stageH-184+38;
+			tContent.x = 18+190+20;
+
+			tBox.addEventListener("click", function(e){
+				if (counter == 0){
+					counter ++;
+					tContent.text = dialogue[counter];
+				}
+			});
+
+
 			var startTime = (new Date()).getTime();
 
 			var clockTab = new createjs.Bitmap("img/bg_timer.png");
@@ -176,8 +187,8 @@
 			var timerText = new createjs.Text("300s", "32px strawberry", "#583f3b");
 			zim.centerReg(timerText,stage);
 			stage.addChild(timerText);
-			timerText.y = 62 + 30;
-			timerText.x = 18 + 67;
+			timerText.y = 62 + 35;
+			timerText.x = 18 + 71;
 
 			//-------------------------------------------------------
 
@@ -233,7 +244,7 @@
 
 			//-------------------------------------------------------
 
-			//SCREEN THREE - ADD THE BORDERS TO THE FRAME!
+			//ADD THE BORDERS TO THE FRAME! Must be above everything else.
 			var bt = new createjs.Bitmap("img/border-top.png");
 			var bb = new createjs.Bitmap("img/border-bottom.png");
 			var bl = new createjs.Bitmap("img/border-left.png");
@@ -249,12 +260,41 @@
 			stage.addChild(bl);
 			stage.addChild(br);
 
+
+			//ticker controls the timer...also used to show the animations
 			createjs.Ticker.addEventListener("tick", tick);
 
+			function loseGame(){
+				lbg.alpha = 1;
+				his.gotoAndStop("lose");
+				tContent.text = "u suck lol"
+			}
+
+			var time;
+			var previousTime;
+			var pauseTime = 0;
+			var totalTime = 5;
+			var totalPausedTime = 0;
+
 			function tick(){
-				currentTime = (new Date()).getTime();
-				var time = Math.floor((currentTime-startTime)/1000);
-				timerText.text = (300 - time) + "s";
+				if (showHelp == false && gamePlay == true){
+					totalPausedTime += pauseTime;
+					pauseTime = 0;
+					currentTime = (new Date()).getTime();
+					time = Math.floor((currentTime-startTime)/1000);
+					timerText.text = (totalTime - time + totalPausedTime) + "s";
+					if (timerText.text == "0s"){
+						gamePlay = false;
+						loseGame();
+					}
+					console.log(timerText.text);
+				}
+				else if (showHelp == true && gamePlay == true){
+					pauseTime = Math.floor(((new Date()).getTime()-startTime)/1000)-time;
+					console.log(pauseTime);
+				}
+
+				previousTime = time;
 
 				stage.update();
 			}
