@@ -36,6 +36,8 @@
 
 		var gamePlay = true;
 
+		var preloadImg;
+
 		var counter = 0;
 		var labelCounter = 0;
 		var dialogue=[
@@ -46,7 +48,38 @@
 		var frame = new zim.Frame(scaling, width, height);
 		frame.on("ready", function() {
 
-			init();
+			var imagePath = "img/";
+			var imgManifest = [
+				//backgrounds
+				{id:"bgg", src:"bg_game.png"},
+				{id:"bggOverlay", src:"bg_game_overlay.png"},
+				{id:"bgIntro1", src:"bg_intro1.png"},
+				{id:"bgIntro2", src:"bg_intro2.png"},
+				{id:"bgLose", src:"bg_lose.png"},
+				{id:"bgMap", src:"bg_map.png"},
+				{id:"bgTimer", src:"bg_timer.png"},
+				{id:"bgWin", src:"bg_win.png"},
+
+				//borders
+				{id:"borderB", src:"border-bottom.png"},
+				{id:"borderL", src:"border-left.png"},
+				{id:"borderR", src:"border-right.png"},
+				{id:"borderT", src:"border-top.png"},
+
+				//buttons
+				{id:"btnChange", src:"btn_change.png"},
+				{id:"btnMail", src:"btn_mail.png"},
+				{id:"btnSkip", src:"btn_skip.png"},
+
+				//objects
+				{id:"headshot", src:"headshot_game.png"},
+				{id:"house", src:"house.png"}
+			];
+
+			//load images
+			preloadImg = new createjs.LoadQueue(false, imagePath);
+			preloadImg.loadManifest(imgManifest);
+			preloadImg.on("complete", init); //on load, start the game
 
 			}); // end of ready
 
@@ -57,12 +90,12 @@
 
 
 			//SCREEN ONE- THE GAME
-			var bgg = new createjs.Bitmap("img/bg_game_overlay.png");
+			var bgg = new createjs.Bitmap(preloadImg.getResult("bggOverlay"));
 			bgg.x = 18;
 			bgg.y = 62;
 			stage.addChild(bgg);
 
-			var btnChange = new createjs.Bitmap("img/btn_change.png");
+			var btnChange = new createjs.Bitmap(preloadImg.getResult("btnChange"));
 			stage.addChild(btnChange);
 			btnChange.x = stageW - 18 - 3 - 100;
 			btnChange.y = stageH - 18 - 184 - 42;
@@ -93,7 +126,7 @@
 					labelCounter++;
 					hCon.gid = labelCounter;
 					hCon.placeHouse = false;
-					house = new createjs.Bitmap("img/house.png");
+					house = new createjs.Bitmap(preloadImg.getResult("house"));
 					house.alpha = 0;
 					hCon.addChild(house);
 				}
@@ -125,18 +158,36 @@
 				stage.update();
 			});
 
-			var lbg = new createjs.Bitmap("img/bg_lose.png");
+			var lbg = new createjs.Bitmap(preloadImg.getResult("bgLose"));
 			lbg.x = 18;
 			lbg.y = 62;
 			lbg.alpha = 0;
 			stage.addChild(lbg);
+
+			var wbg = new createjs.Bitmap(preloadImg.getResult("bgWin"));
+			wbg.x = 18;
+			wbg.y = 62;
+			wbg.alpha = 0;
+			stage.addChild(wbg);
+
+			var i1bg = new createjs.Bitmap(preloadImg.getResult("bgIntro1"));
+			i1bg.x = 18;
+			i1bg.y = 62;
+			i1bg.alpha = 0;
+			stage.addChild(i1bg);
+
+			var i2bg = new createjs.Bitmap(preloadImg.getResult("bgIntro2"));
+			i2bg.x = 18;
+			i2bg.y = 62;
+			i2bg.alpha = 0;
+			stage.addChild(i2bg);
 
 			var tBox = new zim.Rectangle(640, 184, "#e6c5a7","#83675b",1);
 			tBox.y = stageH-184;
 			stage.addChild(tBox);
 
 			var isaacSpriteSheet = new createjs.SpriteSheet({
-				images: ["img/headshot_game.png"],
+				images: [preloadImg.getResult("headshot")],
 				frames: {width:178, height:229},
 				animations:{
 					normal: [0],
@@ -154,7 +205,7 @@
 			stage.addChild(his);
 
 			var mailSpriteSheet = new createjs.SpriteSheet({
-				images: ["img/btn_mail.png"],
+				images: [preloadImg.getResult("btnMail")],
 				frames: {width:48, height:36},
 				animations:{
 					float: [0,3, true, 0.25]
@@ -177,18 +228,6 @@
 					tContent.text = dialogue[counter];
 				}
 			});
-
-
-			var startTime = (new Date()).getTime();
-
-			var clockTab = new createjs.Bitmap("img/bg_timer.png");
-			stage.addChild(clockTab);
-
-			var timerText = new createjs.Text("300s", "32px strawberry", "#583f3b");
-			zim.centerReg(timerText,stage);
-			stage.addChild(timerText);
-			timerText.y = 62 + 35;
-			timerText.x = 18 + 71;
 
 			//-------------------------------------------------------
 
@@ -242,13 +281,19 @@
 				}
 			});
 
+			function loseGame(){
+				lbg.alpha = 1;
+				his.gotoAndStop("lose");
+				tContent.text = "u suck lol"
+			}
+
 			//-------------------------------------------------------
 
 			//ADD THE BORDERS TO THE FRAME! Must be above everything else.
-			var bt = new createjs.Bitmap("img/border-top.png");
-			var bb = new createjs.Bitmap("img/border-bottom.png");
-			var bl = new createjs.Bitmap("img/border-left.png");
-			var br = new createjs.Bitmap("img/border-right.png");
+			var bt = new createjs.Bitmap(preloadImg.getResult("borderT"));
+			var bb = new createjs.Bitmap(preloadImg.getResult("borderB"));
+			var bl = new createjs.Bitmap(preloadImg.getResult("borderL"));
+			var br = new createjs.Bitmap(preloadImg.getResult("borderR"));
 
 			bb.y = stageH-18;
 			bl.y = 62;
@@ -260,20 +305,26 @@
 			stage.addChild(bl);
 			stage.addChild(br);
 
+			var startTime = (new Date()).getTime();
+
+			var clockTab = new createjs.Bitmap(preloadImg.getResult("bgTimer"));
+			stage.addChild(clockTab);
+
+			var timerText = new createjs.Text("300s", "32px strawberry", "#583f3b");
+			timerText.textAlign = "center";
+			timerText.textBaseline = 'middle';
+			zim.centerReg(timerText,stage);
+			stage.addChild(timerText);
+			timerText.y = 62 + 35;
+			timerText.x = 18 + 71;
 
 			//ticker controls the timer...also used to show the animations
 			createjs.Ticker.addEventListener("tick", tick);
 
-			function loseGame(){
-				lbg.alpha = 1;
-				his.gotoAndStop("lose");
-				tContent.text = "u suck lol"
-			}
-
 			var time;
 			var previousTime;
 			var pauseTime = 0;
-			var totalTime = 5;
+			var totalTime = 300;
 			var totalPausedTime = 0;
 
 			function tick(){
