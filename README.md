@@ -1,2 +1,4 @@
 # postmans-quest
-A simple createjs/zim based phone game where you help a postman draw out a delivery route!
+A simple createjs/zim based phone game.
+
+Help the postmaster with his route map! (The title is more dramatic than the game is...)
